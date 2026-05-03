@@ -326,7 +326,7 @@ export function DocWorkspace() {
                             }}
                             className="rounded-md bg-zinc-100 px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-200"
                           >
-                            DB preview
+                            Preview
                           </button>
                           <button
                             type="button"
@@ -337,7 +337,7 @@ export function DocWorkspace() {
                             disabled={restoreLoading}
                             className="rounded-md bg-amber-100 px-2 py-1 text-[11px] font-medium text-amber-900 hover:bg-amber-200 disabled:opacity-50"
                           >
-                            Restore to main
+                            Restore this version
                           </button>
                         </div>
                       </div>
