@@ -202,10 +202,6 @@ export function DocWorkspace() {
           </button>
         </div>
         <div className="flex items-center gap-4 border-t border-zinc-100 bg-zinc-50 px-4 py-1.5 text-zinc-600">
-          <button type="button" className="flex items-center gap-1 rounded px-2 py-1 text-xs hover:bg-zinc-200/80">
-            100%
-            <ChevronDown className="size-3.5 opacity-70" />
-          </button>
           <span className="text-xs text-zinc-500">
             Total: {versions.length} {versions.length === 1 ? 'version' : 'versions'}
           </span>
