@@ -1,7 +1,7 @@
 'use client'
 
 import { DocumentDiff } from '@/components/document-diff'
-import { ChevronDown, Loader2, Save, X } from 'lucide-react'
+import { ChevronDown, Loader2, RotateCcw, Save, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 type VersionSummary = {
@@ -31,6 +31,7 @@ export function DocWorkspace() {
   const [restoreLoading, setRestoreLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [highlightChanges, setHighlightChanges] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
 
   /** Ensures we load the newest saved version into the textarea only once on first list fetch. */
   const initialLatestLoadedRef = useRef(false)
@@ -129,6 +130,26 @@ export function DocWorkspace() {
     }
   }
 
+  const handleResetDatabase = async () => {
+    setResetLoading(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/reset-database', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Reset failed')
+      initialLatestLoadedRef.current = false
+      setText('')
+      setSelectedId(null)
+      setDocKey('draft')
+      setPreview(null)
+      await refreshVersions()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Reset failed')
+    } finally {
+      setResetLoading(false)
+    }
+  }
+
   const handleRestore = async (id: string) => {
     setRestoreLoading(true)
     setError(null)
@@ -214,7 +235,18 @@ export function DocWorkspace() {
 
         <aside className="flex w-[320px] shrink-0 flex-col border-l border-zinc-200 bg-[#f0f1f3]">
           <div className="border-b border-zinc-200/80 bg-white px-4 py-3">
-            <h2 className="text-sm font-semibold text-zinc-800">Version history</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-sm font-semibold text-zinc-800">Version history</h2>
+              <button
+                type="button"
+                onClick={() => void handleResetDatabase()}
+                disabled={resetLoading || loadingList}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-red-200 bg-white px-2 py-1 text-[11px] font-medium text-red-800 hover:bg-red-50 disabled:opacity-50"
+              >
+                {resetLoading ? <Loader2 className="size-3.5 animate-spin" /> : <RotateCcw className="size-3.5" />}
+                Reset all
+              </button>
+            </div>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
             {loadingList ? (
