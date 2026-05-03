@@ -205,10 +205,6 @@ export function DocWorkspace() {
           <span className="text-xs text-zinc-500">
             Total: {versions.length} {versions.length === 1 ? 'version' : 'versions'}
           </span>
-          <div className="flex-1" />
-          <button type="button" className="rounded p-1.5 hover:bg-zinc-200/80" aria-label="Close">
-            <X className="size-4" />
-          </button>
         </div>
       </header>
 
