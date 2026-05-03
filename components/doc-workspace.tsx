@@ -19,10 +19,18 @@ type PreviewPayload = {
   }
 }
 
+const DEFAULT_TITLE = 'Untitled document'
+
+function displayTitleFromVersion(stored: string | null | undefined) {
+  const t = stored?.trim()
+  return t ? t : DEFAULT_TITLE
+}
+
 export function DocWorkspace() {
   const [versions, setVersions] = useState<VersionSummary[]>([])
   const [loadingList, setLoadingList] = useState(true)
   const [docKey, setDocKey] = useState('draft')
+  const [title, setTitle] = useState(DEFAULT_TITLE)
   const [text, setText] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [preview, setPreview] = useState<PreviewPayload | null>(null)
@@ -64,10 +72,15 @@ export function DocWorkspace() {
       const res = await fetch(`/api/versions/${id}`)
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Failed to load version')
-      const loaded = data.version?.document_json.text
+      const row = data.version as {
+        title: string | null
+        document_json: { text?: string } | null
+      }
+      const loaded = row?.document_json?.text
       setSelectedId(id)
       setDocKey(id)
-      setText(loaded)
+      setTitle(displayTitleFromVersion(row?.title ?? null))
+      setText(typeof loaded === 'string' ? loaded : '')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load version')
     }
@@ -96,7 +109,7 @@ export function DocWorkspace() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           documentJson: { text },
-          title: `Save ${new Date().toLocaleString()}`,
+          title: title.trim() || undefined,
         }),
       })
       const data = await res.json()
@@ -105,6 +118,7 @@ export function DocWorkspace() {
       if (data.version?.id) {
         setSelectedId(data.version.id as string)
         setDocKey(data.version.id as string)
+        setTitle(displayTitleFromVersion(data.version.title ?? null))
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Save failed')
@@ -139,6 +153,7 @@ export function DocWorkspace() {
       if (!res.ok) throw new Error(data.error ?? 'Reset failed')
       initialLatestLoadedRef.current = false
       setText('')
+      setTitle(DEFAULT_TITLE)
       setSelectedId(null)
       setDocKey('draft')
       setPreview(null)
@@ -184,9 +199,15 @@ export function DocWorkspace() {
       <header className="flex shrink-0 flex-col border-b border-zinc-200 bg-white">
         <div className="flex items-center gap-3 px-4 py-2">
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-zinc-800">
-              {selectedSummary ? (selectedSummary.title ?? formatWhen(selectedSummary.created_at)) : 'Untitled document'}
-            </p>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              maxLength={500}
+              placeholder={DEFAULT_TITLE}
+              aria-label="Document title"
+              className="w-full min-w-0 border-0 border-b border-transparent bg-transparent py-0.5 text-sm font-medium text-zinc-800 outline-none transition-[border-color] placeholder:text-zinc-400 focus:border-zinc-300"
+            />
             <p className="text-xs text-zinc-500">
               {selectedSummary ? `${formatWhen(selectedSummary.created_at)} · ${selectedSummary.author_label}` : 'Draft — changes are local until you save'}
             </p>
