@@ -381,7 +381,7 @@ export function DocWorkspace() {
           <div className="shrink-0 border-t border-zinc-200/90 bg-white/90 px-3 py-2.5 backdrop-blur-sm sm:px-4">
             <p className="text-center text-[10px] leading-snug text-zinc-500 sm:text-left">
               <span className="text-zinc-400">Powered by </span>
-              <div className="mt-1 flex flex-row gap-x-2 items-center">
+              <div className="mt-1 flex flex-row gap-x-2 items-center justify-start md:justify-center">
                 <a
                   target="_blank"
                   href="https://neon.com"
