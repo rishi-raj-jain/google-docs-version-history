@@ -160,7 +160,7 @@ export function DocWorkspace() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Restore failed')
       refreshVersions().then(() => {
-        loadVersionIntoEditor(versions[0].id)
+        if (versions.length > 0 && versions[0].id) loadVersionIntoEditor(versions[0].id)
       })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Restore failed')
