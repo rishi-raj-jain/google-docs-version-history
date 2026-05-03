@@ -54,7 +54,7 @@ export async function createBranchWithEndpoint(projectId: string, parentBranchId
       name,
       parent_id: parentBranchId,
     },
-    endpoints: [{ type: 'read_write' }],
+    endpoints: [{ type: 'read_write', autoscaling_limit_min_cu: 1, autoscaling_limit_max_cu: 1 }],
   }
 
   const res = await neonFetch<CreateBranchResponse>(`/projects/${projectId}/branches`, { method: 'POST', body: JSON.stringify(body) })
