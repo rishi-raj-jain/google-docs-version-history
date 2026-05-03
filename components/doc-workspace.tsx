@@ -241,7 +241,7 @@ export function DocWorkspace() {
                 aria-label="Document title"
                 className={`w-full min-w-0 border-0 border-b border-transparent bg-transparent py-0.5 text-sm font-medium text-zinc-800 outline-none transition-[border-color] placeholder:text-zinc-400 focus:border-zinc-300 ${showPreviewTitleDiffStrip ? 'mt-0.5' : ''}`}
               />
-              <p className="break-words text-xs text-zinc-500">
+              <p className="wrap-break-word text-xs text-zinc-500">
                 {selectedSummary ? `${formatWhen(selectedSummary.created_at)} · ${selectedSummary.author_label}` : 'Draft — changes are local until you save'}
               </p>
             </div>
