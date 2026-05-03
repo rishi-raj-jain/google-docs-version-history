@@ -1,21 +1,20 @@
 import { getProductionSql } from '@/lib/db'
+import { versionIdSchema } from '@/lib/version-id'
+import * as v from 'valibot'
 import { NextResponse } from 'next/server'
-import { z } from 'zod'
 
 export const runtime = 'nodejs'
 
-const idSchema = z.string().uuid()
-
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params
-  const parsed = idSchema.safeParse(id)
+  const parsed = v.safeParse(versionIdSchema, id)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid version id' }, { status: 400 })
   try {
     const sql = getProductionSql()
     const rows = (await sql.query(
       `SELECT id, created_at, title, document_json, neon_branch_id, author_label
        FROM document_versions WHERE id = $1`,
-      [parsed.data],
+      [parsed.output],
     )) as {
       id: string
       created_at: string

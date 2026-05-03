@@ -1,15 +1,15 @@
 import { getProductionSql } from '@/lib/db'
 import { encodeConnectionString } from '@/lib/encode-connection'
 import { createBranchWithEndpoint, getDefaultBranchId } from '@/lib/neon-console'
+import * as v from 'valibot'
 import { NextResponse } from 'next/server'
-import { z } from 'zod'
 
 export const runtime = 'nodejs'
 
-const saveBodySchema = z.object({
-  documentJson: z.unknown(),
-  title: z.string().max(500).optional(),
-  authorLabel: z.string().max(200).optional(),
+const saveBodySchema = v.object({
+  documentJson: v.unknown(),
+  title: v.optional(v.pipe(v.string(), v.maxLength(500))),
+  authorLabel: v.optional(v.pipe(v.string(), v.maxLength(200))),
 })
 
 export async function GET() {
@@ -29,12 +29,17 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  let body: z.infer<typeof saveBodySchema>
+  let raw: unknown
   try {
-    body = saveBodySchema.parse(await req.json())
+    raw = await req.json()
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
+  const parsed = v.safeParse(saveBodySchema, raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+  const body = parsed.output
   const projectId = process.env.NEON_PROJECT_ID
   if (!projectId) return NextResponse.json({ error: 'NEON_PROJECT_ID is not configured' }, { status: 500 })
   try {

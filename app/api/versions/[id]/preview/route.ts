@@ -1,23 +1,22 @@
 import { getProductionSql } from '@/lib/db'
 import { decodeConnectionString } from '@/lib/encode-connection'
+import { versionIdSchema } from '@/lib/version-id'
 import { neon } from '@neondatabase/serverless'
+import * as v from 'valibot'
 import { NextResponse } from 'next/server'
-import { z } from 'zod'
 
 export const runtime = 'nodejs'
 
-const idSchema = z.string().uuid()
-
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params
-  const parsed = idSchema.safeParse(id)
+  const parsed = v.safeParse(versionIdSchema, id)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid version id' }, { status: 400 })
   try {
     const sqlMain = getProductionSql()
     const rows = (await sqlMain.query(
       `SELECT encoded_connection_string, neon_branch_id, document_json
        FROM document_versions WHERE id = $1`,
-      [parsed.data],
+      [parsed.output],
     )) as {
       encoded_connection_string: string
       neon_branch_id: string
