@@ -1,7 +1,7 @@
 'use client'
 
 import { DocumentDiff } from '@/components/document-diff'
-import { ChevronDown, Loader2, RotateCcw, Save, X } from 'lucide-react'
+import { Loader2, RotateCcw, Save } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 type VersionSummary = {
