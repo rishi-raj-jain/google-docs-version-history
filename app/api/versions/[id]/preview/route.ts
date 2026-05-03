@@ -2,8 +2,8 @@ import { getProductionSql } from '@/lib/db'
 import { decodeConnectionString } from '@/lib/encode-connection'
 import { versionIdSchema } from '@/lib/version-id'
 import { neon } from '@neondatabase/serverless'
-import * as v from 'valibot'
 import { NextResponse } from 'next/server'
+import * as v from 'valibot'
 
 export const runtime = 'nodejs'
 
