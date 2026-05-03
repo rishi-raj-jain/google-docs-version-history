@@ -273,8 +273,8 @@ export function DocWorkspace() {
               <DocumentDiff
                 baselineLabel="Saved text (preview)"
                 currentLabel="Current editor"
-                baselineText={preview?.preview.tables[0]?.name ?? ''}
-                currentText={text}
+                baselineText={text}
+                currentText={preview?.preview.tables[0]?.name ?? ''}
                 onClose={exitPreview}
               />
             </div>
