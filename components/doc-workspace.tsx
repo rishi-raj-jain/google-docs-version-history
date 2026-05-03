@@ -1,6 +1,7 @@
 'use client'
 
-import { DocumentDiff } from '@/components/document-diff'
+import { DocumentDiff, TitleDiffStrip } from '@/components/document-diff'
+import { diffLines } from '@/lib/line-diff'
 import { Loader2, RotateCcw, Save } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -100,6 +101,24 @@ export function DocWorkspace() {
 
   const selectedSummary = useMemo(() => versions.find((v) => v.id === selectedId) ?? null, [versions, selectedId])
 
+  const showPreviewTitleDiff = Boolean(preview && !previewLoading && selectedSummary)
+  const previewTitleBaseline = selectedSummary ? displayTitleFromVersion(selectedSummary.title ?? null) : DEFAULT_TITLE
+  const previewTitleCurrent = displayTitleFromVersion(title.trim() || null)
+
+  const previewTitleHasDiff = useMemo(() => {
+    const parts = diffLines(previewTitleBaseline, previewTitleCurrent)
+    return parts.some((p) => Boolean(p.added || p.removed))
+  }, [previewTitleBaseline, previewTitleCurrent])
+
+  const showPreviewTitleDiffStrip = showPreviewTitleDiff && previewTitleHasDiff
+
+  const showPreviewDocumentDiff = useMemo(() => {
+    if (!preview || previewLoading) return false
+    const baseline = preview.preview.tables[0]?.name ?? ''
+    const parts = diffLines(baseline, text)
+    return parts.some((p) => Boolean(p.added || p.removed))
+  }, [preview, previewLoading, text])
+
   const handleSaveVersion = async () => {
     setSaveLoading(true)
     setError(null)
@@ -174,9 +193,7 @@ export function DocWorkspace() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Restore failed')
-      refreshVersions().then(() => {
-        if (versions.length > 0 && versions[0].id) loadVersionIntoEditor(versions[0].id)
-      })
+      refreshVersions().then(window.location.reload)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Restore failed')
     } finally {
@@ -199,6 +216,16 @@ export function DocWorkspace() {
       <header className="flex shrink-0 flex-col border-b border-zinc-200 bg-white">
         <div className="flex items-center gap-3 px-4 py-2">
           <div className="min-w-0 flex-1">
+            {showPreviewTitleDiffStrip ? (
+              <div className="mb-1 rounded-md border border-zinc-200 bg-zinc-50/80 px-2 py-1.5">
+                <p className="text-[11px] font-medium text-zinc-600">
+                  Title diff · <span className="text-zinc-500">Saved version</span>
+                  {' → '}
+                  <span className="text-zinc-500">Current editor</span>
+                </p>
+                <TitleDiffStrip baselineText={previewTitleBaseline} currentText={previewTitleCurrent} />
+              </div>
+            ) : null}
             <input
               type="text"
               value={title}
@@ -206,7 +233,7 @@ export function DocWorkspace() {
               maxLength={500}
               placeholder={DEFAULT_TITLE}
               aria-label="Document title"
-              className="w-full min-w-0 border-0 border-b border-transparent bg-transparent py-0.5 text-sm font-medium text-zinc-800 outline-none transition-[border-color] placeholder:text-zinc-400 focus:border-zinc-300"
+              className={`w-full min-w-0 border-0 border-b border-transparent bg-transparent py-0.5 text-sm font-medium text-zinc-800 outline-none transition-[border-color] placeholder:text-zinc-400 focus:border-zinc-300 ${showPreviewTitleDiffStrip ? 'mt-0.5' : ''}`}
             />
             <p className="text-xs text-zinc-500">
               {selectedSummary ? `${formatWhen(selectedSummary.created_at)} · ${selectedSummary.author_label}` : 'Draft — changes are local until you save'}
@@ -233,8 +260,8 @@ export function DocWorkspace() {
 
       <div className="flex min-h-0 flex-1">
         <main className="min-h-0 flex-1 overflow-y-auto px-4 py-8">
-          {preview && !previewLoading ? (
-            <DocumentDiff baselineLabel="Saved text (preview)" currentLabel="Current editor" baselineText={preview.preview.tables[0].name} currentText={text} />
+          {showPreviewDocumentDiff ? (
+            <DocumentDiff baselineLabel="Saved text (preview)" currentLabel="Current editor" baselineText={preview?.preview.tables[0]?.name ?? ''} currentText={text} />
           ) : null}
           <textarea
             key={docKey}
@@ -322,13 +349,6 @@ export function DocWorkspace() {
               ) : preview ? (
                 <div className="mt-2 space-y-1 text-zinc-600">
                   <p className="break-all text-[11px] text-zinc-500">Neon branch: {preview.neon_branch_id}</p>
-                  <ul className="mt-2 max-h-32 space-y-1 overflow-y-auto">
-                    {preview.preview.tables.map((t) => (
-                      <li key={t.name} className="flex justify-between gap-2">
-                        {t.name}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               ) : null}
             </div>

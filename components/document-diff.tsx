@@ -2,6 +2,27 @@
 
 import { diffLines } from '@/lib/line-diff'
 
+/** Inline title diff for the header (same highlights as {@link DocumentDiff}). */
+export function TitleDiffStrip({ baselineText, currentText }: { baselineText: string; currentText: string }) {
+  const parts = diffLines(baselineText, currentText)
+  const hasChange = parts.some((p) => Boolean(p.added || p.removed))
+  return (
+    <div className="min-h-[1.25rem] whitespace-pre-wrap break-words">
+      {!hasChange ? (
+        <span className="text-sm font-medium text-zinc-500">{currentText}</span>
+      ) : (
+        <span className="text-sm font-medium leading-snug text-zinc-900">
+          {parts.map((part, i) => (
+            <span key={i} className={part.added ? 'bg-emerald-100 text-emerald-950' : part.removed ? 'bg-rose-100 text-rose-950' : undefined}>
+              {part.value.replace(/\n/g, '')}
+            </span>
+          ))}
+        </span>
+      )}
+    </div>
+  )
+}
+
 export function DocumentDiff({
   baselineLabel,
   currentLabel,
