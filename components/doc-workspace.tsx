@@ -2,7 +2,7 @@
 
 import { DocumentDiff, TitleDiffStrip } from '@/components/document-diff'
 import { diffLines } from '@/lib/line-diff'
-import { Loader2, RotateCcw, Save } from 'lucide-react'
+import { FileText, Loader2, RotateCcw, Save } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 type VersionSummary = {
@@ -212,56 +212,62 @@ export function DocWorkspace() {
   }
 
   return (
-    <div className="flex h-screen min-h-0 flex-col bg-[#f8f9fa] text-zinc-900">
+    <div className="flex h-dvh min-h-0 max-h-dvh flex-col overflow-hidden bg-[#f8f9fa] text-zinc-900">
       <header className="flex shrink-0 flex-col border-b border-zinc-200 bg-white">
-        <div className="flex items-center gap-3 px-4 py-2">
-          <div className="min-w-0 flex-1">
-            {showPreviewTitleDiffStrip ? (
-              <div className="mb-1 rounded-md border border-zinc-200 bg-zinc-50/80 px-2 py-1.5">
-                <p className="text-[11px] font-medium text-zinc-600">
-                  Title diff · <span className="text-zinc-500">Saved version</span>
-                  {' → '}
-                  <span className="text-zinc-500">Current editor</span>
-                </p>
-                <TitleDiffStrip baselineText={previewTitleBaseline} currentText={previewTitleCurrent} />
-              </div>
-            ) : null}
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              maxLength={500}
-              placeholder={DEFAULT_TITLE}
-              aria-label="Document title"
-              className={`w-full min-w-0 border-0 border-b border-transparent bg-transparent py-0.5 text-sm font-medium text-zinc-800 outline-none transition-[border-color] placeholder:text-zinc-400 focus:border-zinc-300 ${showPreviewTitleDiffStrip ? 'mt-0.5' : ''}`}
-            />
-            <p className="text-xs text-zinc-500">
-              {selectedSummary ? `${formatWhen(selectedSummary.created_at)} · ${selectedSummary.author_label}` : 'Draft — changes are local until you save'}
-            </p>
+        <div className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-3 sm:px-4">
+          <div className="flex min-w-0 flex-1 items-start gap-2.5 sm:gap-3">
+            <FileText className="mt-1 size-5 shrink-0 text-zinc-400" aria-hidden />
+            <div className="min-w-0 flex-1">
+              {showPreviewTitleDiffStrip ? (
+                <div className="mb-1 rounded-md border border-zinc-200 bg-zinc-50/80 px-2 py-1.5">
+                  <p className="text-[11px] font-medium text-zinc-600">
+                    Title diff · <span className="text-zinc-500">Saved version</span>
+                    {' → '}
+                    <span className="text-zinc-500">Current editor</span>
+                  </p>
+                  <TitleDiffStrip baselineText={previewTitleBaseline} currentText={previewTitleCurrent} />
+                </div>
+              ) : null}
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={500}
+                placeholder={DEFAULT_TITLE}
+                aria-label="Document title"
+                className={`w-full min-w-0 border-0 border-b border-transparent bg-transparent py-0.5 text-sm font-medium text-zinc-800 outline-none transition-[border-color] placeholder:text-zinc-400 focus:border-zinc-300 ${showPreviewTitleDiffStrip ? 'mt-0.5' : ''}`}
+              />
+              <p className="break-words text-xs text-zinc-500">
+                {selectedSummary ? `${formatWhen(selectedSummary.created_at)} · ${selectedSummary.author_label}` : 'Draft — changes are local until you save'}
+              </p>
+            </div>
           </div>
           <button
             type="button"
             onClick={() => void handleSaveVersion()}
             disabled={saveLoading}
-            className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 disabled:opacity-50"
+            className="inline-flex shrink-0 touch-manipulation items-center justify-center gap-2 self-stretch rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 disabled:opacity-50 sm:self-auto sm:py-2"
           >
-            {saveLoading ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            Save version
+            {saveLoading ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4 shrink-0" />}
+            <span className="sm:hidden">Save</span>
+            <span className="hidden sm:inline">Save version</span>
           </button>
         </div>
-        <div className="flex items-center gap-4 border-t border-zinc-100 bg-zinc-50 px-4 py-1.5 text-zinc-600">
+        <div className="flex items-center gap-4 border-t border-zinc-100 bg-zinc-50 px-3 py-1.5 text-zinc-600 sm:px-4">
           <span className="text-xs text-zinc-500">
             Total: {versions.length} {versions.length === 1 ? 'version' : 'versions'}
           </span>
         </div>
       </header>
 
-      {error ? <div className="mx-4 mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</div> : null}
+      {error ? <div className="mx-3 mt-2 shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 sm:mx-4">{error}</div> : null}
 
-      <div className="flex min-h-0 flex-1">
-        <main className="min-h-0 flex-1 overflow-y-auto px-4 py-8">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <main className="order-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 py-4 sm:px-4 sm:py-6 lg:order-1 lg:px-6 lg:py-8">
           {showPreviewDocumentDiff ? (
-            <DocumentDiff baselineLabel="Saved text (preview)" currentLabel="Current editor" baselineText={preview?.preview.tables[0]?.name ?? ''} currentText={text} />
+            <div className="mx-auto w-full max-w-[816px]">
+              <DocumentDiff baselineLabel="Saved text (preview)" currentLabel="Current editor" baselineText={preview?.preview.tables[0]?.name ?? ''} currentText={text} />
+            </div>
           ) : null}
           <textarea
             key={docKey}
@@ -269,12 +275,12 @@ export function DocWorkspace() {
             onChange={(e) => setText(e.target.value)}
             spellCheck
             placeholder="Start typing…"
-            className="font-default box-border min-h-[calc(100vh-14rem)] w-full max-w-[816px] resize-y rounded-sm border border-zinc-200/90 bg-white px-10 py-14 font-sans text-base leading-relaxed text-zinc-900 shadow-sm outline-none ring-zinc-400 focus:border-zinc-300 focus:ring-2 sm:px-14"
+            className="font-default mx-auto box-border min-h-[min(420px,calc(100dvh-11rem))] w-full max-w-[816px] resize-y rounded-sm border border-zinc-200/90 bg-white px-4 py-8 font-sans text-base leading-relaxed text-zinc-900 shadow-sm outline-none ring-zinc-400 focus:border-zinc-300 focus:ring-2 sm:min-h-[calc(100dvh-13rem)] sm:px-8 sm:py-12 md:px-10 lg:min-h-[calc(100dvh-14rem)] lg:px-14 lg:py-14"
           />
         </main>
 
-        <aside className="flex w-[320px] shrink-0 flex-col border-l border-zinc-200 bg-[#f0f1f3]">
-          <div className="border-b border-zinc-200/80 bg-white px-4 py-3">
+        <aside className="order-2 flex max-h-[min(46vh,420px)] min-h-0 w-full shrink-0 flex-col border-t border-zinc-200 bg-[#f0f1f3] lg:order-2 lg:max-h-none lg:h-auto lg:w-80 lg:max-w-[20rem] lg:shrink-0 lg:border-l lg:border-t-0">
+          <div className="border-b border-zinc-200/80 bg-white px-3 py-2.5 sm:px-4 sm:py-3">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-sm font-semibold text-zinc-800">Version history</h2>
               <button
@@ -288,7 +294,7 @@ export function DocWorkspace() {
               </button>
             </div>
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3">
             {loadingList ? (
               <p className="text-center text-xs text-zinc-500">Loading…</p>
             ) : versions.length === 0 ? (
@@ -342,7 +348,7 @@ export function DocWorkspace() {
             )}
           </div>
           {(previewLoading || preview) && (
-            <div className="max-h-48 overflow-y-auto border-t border-zinc-200 bg-white px-4 py-3 text-xs">
+            <div className="max-h-40 shrink-0 overflow-y-auto overscroll-contain border-t border-zinc-200 bg-white px-3 py-2.5 text-xs sm:max-h-48 sm:px-4 sm:py-3">
               <p className="font-semibold text-zinc-800">Branch preview</p>
               {previewLoading ? (
                 <p className="mt-2 text-zinc-500">Loading preview…</p>
@@ -353,6 +359,41 @@ export function DocWorkspace() {
               ) : null}
             </div>
           )}
+          <div className="shrink-0 border-t border-zinc-200/90 bg-white/90 px-3 py-2.5 backdrop-blur-sm sm:px-4">
+            <p className="text-center text-[10px] leading-snug text-zinc-500 sm:text-left">
+              <span className="text-zinc-400">Powered by </span>
+              <a
+                href="https://neon.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-[#34D59A] underline decoration-zinc-300 underline-offset-2 transition hover:text-zinc-900 hover:decoration-zinc-500"
+              >
+                Neon
+              </a>
+              <span className="text-zinc-300" aria-hidden>
+                {' · '}
+              </span>
+              <a
+                href="https://nextjs.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-2 transition hover:text-zinc-900 hover:decoration-zinc-500"
+              >
+                Next.js
+              </a>
+              <span className="text-zinc-300" aria-hidden>
+                {' · '}
+              </span>
+              <a
+                href="https://vercel.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-2 transition hover:text-zinc-900 hover:decoration-zinc-500"
+              >
+                Vercel
+              </a>
+            </p>
+          </div>
         </aside>
       </div>
     </div>

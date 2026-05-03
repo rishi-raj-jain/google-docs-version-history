@@ -37,15 +37,15 @@ export function DocumentDiff({
   const parts = diffLines(baselineText, currentText)
   const hasChange = parts.some((p) => Boolean(p.added || p.removed))
   return (
-    <div className="mb-6 w-full max-w-[816px] rounded-md border border-zinc-200 bg-white shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50 px-4 py-2">
+    <div className="mb-4 w-full max-w-[816px] rounded-md border border-zinc-200 bg-white shadow-sm sm:mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 bg-zinc-50 px-3 py-2 sm:px-4">
         <p className="text-xs font-medium text-zinc-700">
           Text diff · <span className="text-zinc-500">{baselineLabel}</span>
           {' → '}
           <span className="text-zinc-500">{currentLabel}</span>
         </p>
       </div>
-      <div className="max-h-[min(50vh,420px)] overflow-auto px-4 py-3">
+      <div className="max-h-[min(50vh,420px)] overflow-auto px-3 py-3 sm:px-4">
         {!hasChange ? (
           <p className="text-sm text-zinc-500">No differences — editor matches this version’s saved text.</p>
         ) : (
