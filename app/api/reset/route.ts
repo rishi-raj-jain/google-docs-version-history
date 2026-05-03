@@ -1,7 +1,5 @@
 import { getProductionSql } from '@/lib/db'
 import { NextResponse } from 'next/server'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 
 export const runtime = 'nodejs'
 
@@ -16,23 +14,6 @@ BEGIN
   END LOOP;
 END $$;
 `
-
-function loadVersionsSchemaStatements(): string[] {
-  const path = join(process.cwd(), 'scripts', 'create-versions-table.sql')
-  const raw = readFileSync(path, 'utf8')
-  const stripped = raw
-    .split('\n')
-    .map((line) => {
-      const t = line.trim()
-      if (t.startsWith('--')) return ''
-      return line
-    })
-    .join('\n')
-  return stripped
-    .split(';')
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0)
-}
 
 export async function POST() {
   try {

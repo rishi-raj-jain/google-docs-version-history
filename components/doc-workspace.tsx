@@ -167,7 +167,7 @@ export function DocWorkspace() {
     setResetLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/reset-database', { method: 'POST' })
+      const res = await fetch('/api/reset', { method: 'POST' })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Reset failed')
       initialLatestLoadedRef.current = false
