@@ -193,7 +193,7 @@ export function DocWorkspace() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Restore failed')
-      refreshVersions().then(window.location.reload)
+      refreshVersions().then(() => window.location.reload())
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Restore failed')
     } finally {
