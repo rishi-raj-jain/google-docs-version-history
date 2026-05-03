@@ -381,36 +381,33 @@ export function DocWorkspace() {
           <div className="shrink-0 border-t border-zinc-200/90 bg-white/90 px-3 py-2.5 backdrop-blur-sm sm:px-4">
             <p className="text-center text-[10px] leading-snug text-zinc-500 sm:text-left">
               <span className="text-zinc-400">Powered by </span>
-              <a
-                href="https://neon.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-[#34D59A] underline decoration-zinc-300 underline-offset-2 transition hover:text-zinc-900 hover:decoration-zinc-500"
-              >
-                Neon
-              </a>
-              <span className="text-zinc-300" aria-hidden>
-                {' · '}
-              </span>
-              <a
-                href="https://nextjs.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-2 transition hover:text-zinc-900 hover:decoration-zinc-500"
-              >
-                Next.js
-              </a>
-              <span className="text-zinc-300" aria-hidden>
-                {' · '}
-              </span>
-              <a
-                href="https://vercel.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-2 transition hover:text-zinc-900 hover:decoration-zinc-500"
-              >
-                Vercel
-              </a>
+              <div className="mt-1 flex flex-row gap-x-2 items-center">
+                <a
+                  target="_blank"
+                  href="https://neon.com"
+                  className="font-medium flex flex-row gap-x-2 items-center text-[#34D59A] underline decoration-zinc-300 underline-offset-2 transition hover:text-zinc-900 hover:decoration-zinc-500"
+                >
+                  <img className="size-2" src="https://neon.com/brand/neon-logomark-light-color.svg?updated=2026-01-21&dpl=dpl_59jZrobFv8n6AARYztnUyfbiPA7w" />
+                  <span>Neon</span>
+                </a>
+                <a
+                  target="_blank"
+                  href="https://nextjs.org"
+                  className="font-medium text-zinc-600 underline decoration-zinc-300 underline-offset-2 transition hover:text-zinc-900 hover:decoration-zinc-500"
+                >
+                  Next.js
+                </a>
+                <a
+                  target="_blank"
+                  href="https://vercel.com"
+                  className="font-medium flex flex-row gap-x-2 items-center text-zinc-600 underline decoration-zinc-300 underline-offset-2 transition hover:text-zinc-900 hover:decoration-zinc-500"
+                >
+                  <svg className="size-2" height="32" role="img" viewBox="0 0 74 64">
+                    <path d="M37.5896 0.25L74.5396 64.25H0.639648L37.5896 0.25Z"></path>
+                  </svg>
+                  <span>Vercel</span>
+                </a>
+              </div>
             </p>
           </div>
         </aside>
