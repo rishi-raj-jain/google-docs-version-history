@@ -263,19 +263,17 @@ export function DocWorkspace() {
           </span>
         </div>
       </header>
-
       {error ? <div className="mx-3 mt-2 shrink-0 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 sm:mx-4">{error}</div> : null}
-
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <main className="order-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 py-4 sm:px-4 sm:py-6 lg:order-1 lg:px-6 lg:py-8">
           {showPreviewDocumentDiff ? (
             <div className="mx-auto w-full max-w-[816px]">
               <DocumentDiff
-                baselineLabel="Saved text (preview)"
-                currentLabel="Current editor"
+                onClose={exitPreview}
+                baselineLabel="Current editor"
+                currentLabel="Saved text (preview)"
                 baselineText={text}
                 currentText={preview?.preview.tables[0]?.name ?? ''}
-                onClose={exitPreview}
               />
             </div>
           ) : preview && !previewLoading ? (
