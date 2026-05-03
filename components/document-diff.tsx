@@ -1,6 +1,7 @@
 'use client'
 
 import { diffLines } from '@/lib/line-diff'
+import { X } from 'lucide-react'
 
 /** Inline title diff for the header (same highlights as {@link DocumentDiff}). */
 export function TitleDiffStrip({ baselineText, currentText }: { baselineText: string; currentText: string }) {
@@ -28,11 +29,13 @@ export function DocumentDiff({
   currentLabel,
   baselineText,
   currentText,
+  onClose,
 }: {
   baselineLabel: string
   currentLabel: string
   baselineText: string
   currentText: string
+  onClose?: () => void
 }) {
   const parts = diffLines(baselineText, currentText)
   const hasChange = parts.some((p) => Boolean(p.added || p.removed))
@@ -44,6 +47,16 @@ export function DocumentDiff({
           {' → '}
           <span className="text-zinc-500">{currentLabel}</span>
         </p>
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex touch-manipulation items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-100"
+          >
+            <X className="size-3.5 shrink-0" aria-hidden />
+            Exit diff
+          </button>
+        ) : null}
       </div>
       <div className="max-h-[min(50vh,420px)] overflow-auto px-3 py-3 sm:px-4">
         {!hasChange ? (

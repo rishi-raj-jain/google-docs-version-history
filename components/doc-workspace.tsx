@@ -2,7 +2,7 @@
 
 import { DocumentDiff, TitleDiffStrip } from '@/components/document-diff'
 import { diffLines } from '@/lib/line-diff'
-import { FileText, Loader2, RotateCcw, Save } from 'lucide-react'
+import { FileText, Loader2, RotateCcw, Save, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 type VersionSummary = {
@@ -211,6 +211,10 @@ export function DocWorkspace() {
     })
   }
 
+  const exitPreview = useCallback(() => {
+    setPreview(null)
+  }, [])
+
   return (
     <div className="flex h-dvh min-h-0 max-h-dvh flex-col overflow-hidden bg-[#f8f9fa] text-zinc-900">
       <header className="flex shrink-0 flex-col border-b border-zinc-200 bg-white">
@@ -266,7 +270,24 @@ export function DocWorkspace() {
         <main className="order-1 flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 py-4 sm:px-4 sm:py-6 lg:order-1 lg:px-6 lg:py-8">
           {showPreviewDocumentDiff ? (
             <div className="mx-auto w-full max-w-[816px]">
-              <DocumentDiff baselineLabel="Saved text (preview)" currentLabel="Current editor" baselineText={preview?.preview.tables[0]?.name ?? ''} currentText={text} />
+              <DocumentDiff
+                baselineLabel="Saved text (preview)"
+                currentLabel="Current editor"
+                baselineText={preview?.preview.tables[0]?.name ?? ''}
+                currentText={text}
+                onClose={exitPreview}
+              />
+            </div>
+          ) : preview && !previewLoading ? (
+            <div className="mx-auto mb-3 flex w-full max-w-[816px] justify-end sm:mb-4">
+              <button
+                type="button"
+                onClick={exitPreview}
+                className="inline-flex touch-manipulation items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-100"
+              >
+                <X className="size-3.5 shrink-0" aria-hidden />
+                Exit diff
+              </button>
             </div>
           ) : null}
           <textarea
